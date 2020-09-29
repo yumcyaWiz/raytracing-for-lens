@@ -115,7 +115,7 @@ class LensSurface:
 class LensSystem:
     def __init__(self, filepath: str):
         # レンズデータの読み込み
-        self.df = df = pd.read_csv(filepath)
+        self.df = pd.read_csv(filepath)
 
         # レンズ面の生成
         self.lenses = []
@@ -189,5 +189,4 @@ class LensSystem:
         plt.title('Spherical Aberration')
         plt.xlabel('$y\mathrm{[mm]}$')
         plt.ylabel('Height$\mathrm{[mm]}$')
-
         return ax
