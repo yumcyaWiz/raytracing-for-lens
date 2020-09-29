@@ -136,7 +136,7 @@ class LensSystem:
     def __repr__(self):
         return str(self.df)
 
-    def raytrace_from_object(self, ray_in: Ray) -> Ray:
+    def raytrace_from_object(self, ray_in: Ray) -> List[Ray]:
         n1 = 1
         ray = ray_in
         rays = [ray]
