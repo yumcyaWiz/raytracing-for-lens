@@ -162,3 +162,32 @@ class LensSystem:
             n1 = n2
 
         return rays
+
+    def plot_spherical_aberration(self):
+        graph_x = []
+        graph_y = []
+
+        for i in range(50):
+            # 入射高
+            u = (i / 50)
+            height = 0.5 * self.lenses[0].h * u
+            graph_y.append(height)
+
+            # レイトレ
+            rays = self.raytrace_from_object(Ray(
+                np.array([0, height, -1000]),
+                np.array([0, 0, 1])
+            ))
+
+            # 像面との交点
+            t = -rays[-1].origin[2] / rays[-1].direction[2]
+            p = rays[-1].position(t)
+            graph_x.append(p[1])
+
+        ax = plt.plot(graph_x, graph_y)
+        plt.grid()
+        plt.title('Spherical Aberration')
+        plt.xlabel('$y\mathrm{[mm]}$')
+        plt.ylabel('Height$\mathrm{[mm]}$')
+
+        return ax
