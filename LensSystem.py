@@ -119,17 +119,17 @@ class LensSystem:
 
         # レンズ面の生成
         self.lenses = []
-        for i in range(len(df)):
+        for i in range(len(self.df)):
             self.lenses.append(LensSurface(
-                df.iloc[i]["r"],
-                df.iloc[i]["h"],
-                df.iloc[i]["d"],
-                df.iloc[i]["ior"]
+                self.df.iloc[i]["r"],
+                self.df.iloc[i]["h"],
+                self.df.iloc[i]["d"],
+                self.df.iloc[i]["ior"]
             ))
 
         # 各レンズ面の位置を計算
         z = 0
-        for i in reversed(range(len(df))):
+        for i in reversed(range(len(self.df))):
             z -= self.lenses[i].d
             self.lenses[i].z = z
 
