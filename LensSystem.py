@@ -4,8 +4,13 @@ import matplotlib.pyplot as plt
 from typing import List, Tuple, Optional
 
 
+# ベクトルを正規化する
 def normalize(v: np.ndarray) -> np.ndarray:
     return v / np.linalg.norm(v)
+
+# レイの方向に応じて法線を逆転させる
+# v: レイの方向ベクトル
+# n: 法線
 
 
 def flip_normal(v: np.ndarray, n: np.ndarray) -> np.ndarray:
@@ -16,6 +21,9 @@ def flip_normal(v: np.ndarray, n: np.ndarray) -> np.ndarray:
 
 
 class Ray:
+    # レイを表現する
+    # origin: レイの始点
+    # direction: レイの方向ベクトル
     def __init__(self, origin: np.ndarray, direction: np.ndarray):
         self.origin = origin
         self.direction = direction
@@ -23,11 +31,19 @@ class Ray:
     def __repr__(self):
         return "origin: {0}, direction: {1}".format(self.origin, self.direction)
 
+    # レイ上の位置を計算する
+    # t: 始点からの距離
     def position(self, t: float) -> np.ndarray:
         p = self.origin + t * self.direction
         return p
 
 
+# 屈折ベクトルを計算する
+# 全反射の場合はNoneを返す
+# v: 入射ベクトル
+# n: 法線
+# n1: 入射側媒質の屈折率
+# n2: 出射側媒質の屈折率
 def refract(v: np.ndarray, n: np.ndarray, n1: float, n2: float) -> Optional[np.ndarray]:
     # 屈折ベクトルの水平方向
     t_h = -n1 / n2 * (v - np.dot(v, n)*n)
@@ -46,6 +62,12 @@ def refract(v: np.ndarray, n: np.ndarray, n1: float, n2: float) -> Optional[np.n
 
 
 class LensSurface:
+    # レンズ面を表現する
+    # r=0で平面を表現する
+    # r: 曲率半径
+    # h: 開口半径
+    # d: 次の面までの距離
+    # ior: 屈折率
     def __init__(self, r: float, h: float, d: float, ior: float):
         self.z = 0
         self.r = r
@@ -53,6 +75,9 @@ class LensSurface:
         self.d = d
         self.ior = ior
 
+    # レイとの交差位置, 法線を計算する
+    # 交差しない場合はNoneを返す
+    # ray: レイ
     def intersect(self, ray: Ray) -> Optional[Tuple[np.ndarray, np.ndarray]]:
         if self.r != 0:
             # 球面との交差
@@ -113,6 +138,8 @@ class LensSurface:
 
 
 class LensSystem:
+    # レンズ系を表現する
+    # filepath: csvファイルのファイルパス
     def __init__(self, filepath: str):
         # レンズデータの読み込み
         self.df = pd.read_csv(filepath)
@@ -136,6 +163,8 @@ class LensSystem:
     def __repr__(self):
         return str(self.df)
 
+    # 物体側から像側に向かってレイトレーシングを行い、光線経路を返す
+    # ray_in: 入射レイ
     def raytrace_from_object(self, ray_in: Ray) -> List[Ray]:
         n1 = 1
         ray = ray_in
@@ -163,6 +192,7 @@ class LensSystem:
 
         return rays
 
+    # 球面収差をプロットする
     def plot_spherical_aberration(self):
         graph_x = []
         graph_y = []
