@@ -286,6 +286,8 @@ class LensSystem:
 
         return ax
 
+    # 光路図をプロットする
+    # n_rays: レイの本数
     def optical_path_diagram(self, n_rays=10):
         # レンズ系の表示
         ax = self.plot()
