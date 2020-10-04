@@ -228,18 +228,58 @@ class LensSystem:
         for i in range(len(self.lenses)):
             lens = self.lenses[i]
 
+            # レンズ面のプロット
             # 絞りの場合
             if lens.r == 0:
                 ax.plot([lens.z, lens.z], [lens.h, 1.2*lens.h], c='blue')
                 ax.plot([lens.z, lens.z], [-lens.h, -1.2*lens.h], c='blue')
+            # 球面レンズの場合
             else:
                 theta = abs(np.degrees(np.arcsin(lens.h / lens.r)))
-                print(theta, lens.h, lens.r)
                 angle = 180 if lens.r > 0 else 0
                 arc = patches.Arc((lens.z + lens.r, 0), 2 * abs(lens.r),
                                   2 * abs(lens.r), angle=angle, theta1=-theta, theta2=theta)
                 ax.add_patch(arc)
 
+            # レンズ枠のプロット
+            if i > 0:
+                lens_prev = self.lenses[i - 1]
+
+                # 前面 or 現在の面が絞りならスキップ
+                if lens.r == 0 or lens_prev.r == 0:
+                    continue
+
+                # 前面が空気ならスキップ
+                if lens_prev.ior == 1:
+                    continue
+
+                def compute_l(z, r, h):
+                    return r - np.sqrt(r**2 - h**2) if r > 0 else -(np.abs(r) - np.sqrt(r**2 - h**2))
+
+                zp = lens_prev.z
+                hp = lens_prev.h
+                lp = compute_l(lens_prev.z, lens_prev.r, lens_prev.h)
+                z = lens.z
+                h = lens.h
+                l = compute_l(lens.z, lens.r, lens.h)
+
+                if lens.h > lens_prev.h:
+                    ax.plot([zp + lp, z + l], [h, h], c='black')
+                    ax.plot([zp + lp, z + l], [-h, -h], c='black')
+                    ax.plot([zp + lp, zp + lp], [hp, h], c='black')
+                    ax.plot([zp + lp, zp + lp], [-hp, -h], c='black')
+                else:
+                    ax.plot([zp + lp, z + l], [hp, hp], c='black')
+                    ax.plot([zp + lp, z + l], [-hp, -hp], c='black')
+                    ax.plot([z + l, z + l], [hp, h], c='black')
+                    ax.plot([z + l, z + l], [-h, -hp], c='black')
+
+        z_list = [lens.z for lens in self.lenses]
+        length = max(z_list) - min(z_list)
+        max_h = max([lens.h for lens in self.lenses])
+        ax.set_xlim([min(z_list) - 0.3*length, 0.3*length])
+        ax.set_ylim([-1.1*max_h, 1.1*max_h])
+        ax.set_aspect('equal')
         ax.grid('on')
         plt.xlabel('$z \mathrm{[mm]}$')
         plt.xlabel('$y \mathrm{[mm]}$')
