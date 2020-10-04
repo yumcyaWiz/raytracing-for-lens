@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from typing import List, Tuple, Optional
 
 
@@ -200,7 +201,7 @@ class LensSystem:
         for i in range(50):
             # 入射高
             u = (i / 50)
-            height = 0.5 * self.lenses[0].h * u
+            height = self.lenses[0].h * u
             graph_y.append(height)
 
             # レイトレ
@@ -219,4 +220,28 @@ class LensSystem:
         plt.title('Spherical Aberration')
         plt.xlabel('$y\mathrm{[mm]}$')
         plt.ylabel('Height$\mathrm{[mm]}$')
+        return ax
+
+    # レンズ系をプロットする
+    def plot(self):
+        fig, ax = plt.subplots()
+        for i in range(len(self.lenses)):
+            lens = self.lenses[i]
+
+            # 絞りの場合
+            if lens.r == 0:
+                ax.plot([lens.z, lens.z], [lens.h, 1.2*lens.h], c='blue')
+                ax.plot([lens.z, lens.z], [-lens.h, -1.2*lens.h], c='blue')
+            else:
+                theta = abs(np.degrees(np.arcsin(lens.h / lens.r)))
+                print(theta, lens.h, lens.r)
+                angle = 180 if lens.r > 0 else 0
+                arc = patches.Arc((lens.z + lens.r, 0), 2 * abs(lens.r),
+                                  2 * abs(lens.r), angle=angle, theta1=-theta, theta2=theta)
+                ax.add_patch(arc)
+
+        ax.grid('on')
+        plt.xlabel('$z \mathrm{[mm]}$')
+        plt.xlabel('$y \mathrm{[mm]}$')
+
         return ax
