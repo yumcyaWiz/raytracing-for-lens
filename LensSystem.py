@@ -282,6 +282,6 @@ class LensSystem:
         ax.set_aspect('equal')
         ax.grid('on')
         plt.xlabel('$z \mathrm{[mm]}$')
-        plt.xlabel('$y \mathrm{[mm]}$')
+        plt.ylabel('$y \mathrm{[mm]}$')
 
         return ax
