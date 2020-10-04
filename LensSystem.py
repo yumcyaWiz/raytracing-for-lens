@@ -285,3 +285,40 @@ class LensSystem:
         plt.ylabel('$y \mathrm{[mm]}$')
 
         return ax
+
+    def optical_path_diagram(self, n_rays=10):
+        # レンズ系の表示
+        ax = self.plot()
+
+        # 光路図のプロット
+        for i in range(n_rays):
+            u = 2 * (i + 0.5) / n_rays - 1
+            h = self.lenses[0].h
+
+            # 入射レイ
+            ray_direction = np.array([0, 0, 1])
+            ray_origin = np.array([0, u*h, self.lenses[0].z]) - ray_direction
+            ray_in = Ray(ray_origin, ray_direction)
+
+            # レイトレ
+            rays = self.raytrace_from_object(ray_in)
+
+            # zとyの抽出
+            line_x = list(map(lambda x: x.origin[2], rays))
+            line_y = list(map(lambda x: x.origin[1], rays))
+
+            # 像面までの光路を追加
+            if len(line_x) == len(self.lenses) + 1:
+                if rays[-1].direction[2] != 0:
+                    # 像面との交差位置を計算
+                    t = -rays[-1].origin[2] / rays[-1].direction[2]
+                    p = rays[-1].origin + t*rays[-1].direction
+
+                    # zとyを追加
+                    line_x.append(p[2])
+                    line_y.append(p[1])
+
+            # プロット
+            ax.plot(line_x, line_y, c='lime')
+
+        return ax
