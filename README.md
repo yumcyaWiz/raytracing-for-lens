@@ -1,6 +1,6 @@
 # raytracing-for-lens
 
-This is reference implementation of my blog post [写真レンズのレイトレーシング(RayTracing of Photographic Lens)]()
+This is reference implementation of my blog post [写真レンズのレイトレーシング(RayTracing of Photographic Lens)](https://yumcyawiz.github.io/teastat/2020/09/01/raytracing-for-lens/)
 
 ## Gallery
 
